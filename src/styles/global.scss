@@ -1,0 +1,22 @@
+@import 'reset';
+@import 'variables';
+
+:root {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-openSans), sans-serif;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  background-color: $color-background;
+}
+
+.container {
+  max-width: min(1350px, calc(100vw - 2.5em), 95%);
+  width: 100%;
+  margin-inline: auto;
+}
