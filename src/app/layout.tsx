@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Open_Sans } from 'next/font/google';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '@/styles/global.scss';
 import { ReactNode } from 'react';
+import Navbar from '@/components/Navbar/Navbar';
+import '@/styles/global.scss';
 
 export const metadata: Metadata = {
   title: "TERMO",
@@ -22,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={openSans.variable}>{children}</body>
+      <body className={openSans.variable}>
+        <Navbar/>
+        {children}
+      </body>
     </html>
   );
 }

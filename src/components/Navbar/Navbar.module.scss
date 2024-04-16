@@ -1,0 +1,44 @@
+@import '@/styles/variables';
+
+.nav {
+  height: 64px;
+  background-color: $color-nav;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 0 3px rgba(170, 170, 170, 0.6);
+
+  .content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .brand {
+      font-size: 2rem;
+      font-weight: bold;
+      color: $color-green-correct;
+
+      span {
+        color: $color-yellow-present;
+      }
+    }
+
+    .linkList {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin: 0;
+
+      .item {
+        .link {
+          color: white;
+          transition: .3s;
+          font-size: 1.25rem;
+
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+      }
+    }
+  }
+}

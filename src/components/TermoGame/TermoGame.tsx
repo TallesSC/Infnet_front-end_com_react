@@ -1,25 +1,26 @@
 'use client';
 import styles from './TermoGame.module.scss';
 import { useEffect, useState } from 'react';
-import { WORDS } from '@/data/words';
 import classNames from 'classnames';
+import { wordList } from '@/data/words';
 
 const MAX_ROUNDS = 6;
 const MAX_LETTERS = 5;
 
 export default function TermoGame() {
 
-  const secretWord = 'lapis';
-
+  const [secretWord, setSecretWord] = useState<string>('');
   const [currentRound, setCurrentRound] = useState<number>(1);
   const [currentWord, setCurrentWord] = useState<string>('');
   const [words, setWords] = useState<string[]>([]);
+  const [gameEnded, setGameEnded] = useState(false);
 
   function deleteLetter() {
     setCurrentWord((oldWord) => oldWord.slice(0, -1));
   }
 
   function checkGuess() {
+    console.log(`currentWord: ${currentWord}`);
     setCurrentWord('');
     setCurrentRound((oldRound) => oldRound > MAX_ROUNDS ? oldRound : oldRound + 1);
   }
@@ -32,7 +33,6 @@ export default function TermoGame() {
     if (currentRound > MAX_ROUNDS) return;
 
     const {key} = event;
-    console.log(`PRESSED ${key}`);
 
     if (key === 'Enter') {
       checkGuess();
@@ -48,20 +48,32 @@ export default function TermoGame() {
     if (!keyIsLetter || keyIsLetter.length > 1 || currentWord.length >= MAX_LETTERS) return;
 
     insertLetter(key.toLowerCase());
-
-    console.log('------------------')
   }
 
   useEffect(() => {
-    console.log(`currentWord = ${currentWord}`);
-    setWords(oldWords => {
-      let newWords = oldWords;
-      newWords[currentRound-1] = currentWord;
-      return newWords;
-    })
+    if (gameEnded) {
+      window.removeEventListener('keydown', handleKey);
+    }
+  }, [gameEnded]);
+
+  useEffect(() => {
+    if (secretWord !== '' && words[words.length-1] === secretWord) {
+      setGameEnded(true);
+      alert(`Parabéns, você venceu Termo em ${currentRound-1} jogadas!`);
+    } else if(currentRound > MAX_ROUNDS) {
+      setGameEnded(true);
+      alert(`Que pena, você não descobriu a palavra e perdeu!`);
+    } else {
+      setWords(oldWords => {
+        let newWords = oldWords;
+        newWords[currentRound - 1] = currentWord;
+        return newWords;
+      });
+    }
   }, [currentWord]);
 
   useEffect(() => {
+    setSecretWord(wordList[Math.floor(Math.random() * wordList.length)]);
     window.addEventListener('keydown', handleKey);
     return () => {
       window.removeEventListener('keydown', handleKey);
@@ -70,17 +82,16 @@ export default function TermoGame() {
 
   return (
     <section className="container">
-      <h1 className={styles.title}>TERMO</h1>
+      <h1 className={styles.title}><span>Ter</span>mo</h1>
       <div className={styles.wrapper}>
         {
           Array(MAX_ROUNDS).fill('').map((item, index) => (
             <Line key={`line_${index}`}
-                  // word={index + 1 === currentRound ? currentWord : (words?.[index] ?? '')}
                   word={index + 1 === currentRound ? currentWord : (words?.[index] ?? '')}
-                  // isCurrent={index + 1 === currentRound}
                   round={index + 1}
                   currentRound={currentRound}
-                  secretWord={secretWord}/>
+                  secretWord={secretWord}
+                  gameEnded={gameEnded}/>
           ))
         }
       </div>
@@ -93,11 +104,13 @@ interface Line {
   round: number,
   currentRound: number,
   secretWord: string,
+  gameEnded: boolean,
 }
 
-function Line({word, round, currentRound, secretWord}: Line) {
+function Line({word, round, currentRound, secretWord, gameEnded}: Line) {
+
   return (
-    <div className={classNames(styles.line)}>
+    <div className={classNames(styles.line, {[styles.invisible]: gameEnded && round >= currentRound})}>
       {
         Array(MAX_LETTERS).fill('').map((item, index) => (
           <Square key={`line_${round}-letter_${index + 1}`}
